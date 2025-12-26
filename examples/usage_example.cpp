@@ -1,18 +1,23 @@
-#include <iostream>
-#include <thread>
 #include <chrono>
+#include <iostream>
 #include <string>
+#include <thread>
+#include <vector>
 
 #include "kitpp/kitpp.hpp" // Includes log, scope_timer, etc.
 
-void some_work() {
-    kitpp::ScopeTimer timer("some_work");
+void some_work()
+{
+    // Use the macro to automatically capture file/line info for the timer
+    KITPP_SCOPE_TIMER("some_work");
+
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    kitpp::log::warn("This is a warning inside some_work.");
+    KITPP_LOG_WARN("This is a warning inside some_work.");
 }
 
-int main() {
-    kitpp::log::info(std::string("Starting application, kitpp version: ") + kitpp::version_string.data());
+int main()
+{
+    KITPP_LOG_INFO(std::string("Starting application, kitpp version: ") + std::string(kitpp::version_string));
 
     some_work();
 
@@ -25,11 +30,11 @@ int main() {
     }
 
     int my_var = 42;
-    kitpp::log::var("my_var", my_var);
+    KITPP_LOG_VAR(my_var);
 
-    kitpp::log::thread_context("main thread final check");
+    KITPP_LOG_THREAD_CONTEXT("main thread final check");
 
-    kitpp::log::error("Exiting with a simulated error.");
+    KITPP_LOG_ERROR("Exiting with a simulated error.");
 
     return 0;
 }
