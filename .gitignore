@@ -1,0 +1,25 @@
+# --- Build Artifacts (Meson & Manual) ---
+# Meson default build directories
+build/
+builddir/
+.meson/
+
+# Manual makefile artifacts
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+*.app
+/bin/
+
+# --- IDE & System ---
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*~

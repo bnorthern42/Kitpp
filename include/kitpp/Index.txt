@@ -1,0 +1,4 @@
+This contains a list of public used headers that I did not develop myself and all praise should go to original authors:
+
+Filename - brief description : URL
+Rang.hpp - Colored terminal text: https://github.com/agauniyal/rang
