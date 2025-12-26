@@ -16,7 +16,7 @@ builddir/
 *.out
 *.app
 /bin/
-
+*.git/
 # --- IDE & System ---
 .vscode/
 .idea/
