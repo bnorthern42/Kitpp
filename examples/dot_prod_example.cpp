@@ -1,65 +1,13 @@
 #include <kitpp/kitpp.hpp>
+#include <kitpp/math/dot_prod.hpp> // Assumes dot_prod.hpp is in include/kitpp/math/
 
 #include <cmath>
-#include <immintrin.h> // For AVX intrinsics
+#include <immintrin.h> // For AVX intrinsics in main (malloc)
 #include <iomanip>
 #include <sstream>
 #include <vector>
 
-// --- Dot Product Implementations ---
-
-// 1. Scalar Implementation
-double dot_scalar(double* a, double* b, size_t n)
-{
-    double sum = 0.0;
-    for (size_t i = 0; i < n; i++) {
-        sum += a[i] * b[i];
-    }
-    return sum;
-}
-
-// 2. AVX (4x unroll per instruction effectively)
-double dot_avx_4x(double* a, double* b, size_t n)
-{
-    __m256d sum = _mm256_setzero_pd();
-    // Assuming n is divisible by 4 for simplicity
-    for (size_t i = 0; i < n; i += 4) {
-        __m256d va = _mm256_load_pd(&a[i]);
-        __m256d vb = _mm256_load_pd(&b[i]);
-        sum = _mm256_fmadd_pd(va, vb, sum);
-    }
-    double res[4];
-    _mm256_storeu_pd(res, sum);
-    return res[0] + res[1] + res[2] + res[3];
-}
-
-// 3. Zen2/Modern AVX (8x unroll - 2 accumulators)
-// Helps hide FMA latency
-double dot_avx_zen2(double* a, double* b, size_t n)
-{
-    __m256d sum1 = _mm256_setzero_pd();
-    __m256d sum2 = _mm256_setzero_pd();
-
-    // Process 8 elements per loop
-    size_t i = 0;
-    for (; i < n - 7; i += 8) {
-        sum1 = _mm256_fmadd_pd(_mm256_load_pd(&a[i]), _mm256_load_pd(&b[i]), sum1);
-        sum2 = _mm256_fmadd_pd(_mm256_load_pd(&a[i + 4]), _mm256_load_pd(&b[i + 4]), sum2);
-    }
-
-    // Combine accumulators
-    sum1 = _mm256_add_pd(sum1, sum2);
-
-    double res[4];
-    _mm256_storeu_pd(res, sum1);
-    double total = res[0] + res[1] + res[2] + res[3];
-
-    // Handle cleanup scalar
-    for (; i < n; i++) {
-        total += a[i] * b[i];
-    }
-    return total;
-}
+using namespace kitpp::math;
 
 // --- Benchmark Helpers ---
 
@@ -121,6 +69,7 @@ int main()
         KITPP_LOG_INFO("--- L1 CACHE TEST (4096 elements) ---");
         size_t iters_small = 100000;
 
+        // Functions now come from kitpp::math (via dot_prod.hpp)
         double t_s = run_benchmark(dot_scalar, a_small, b_small, n_small, iters_small);
         double t_4 = run_benchmark(dot_avx_4x, a_small, b_small, n_small, iters_small);
         double t_8 = run_benchmark(dot_avx_zen2, a_small, b_small, n_small, iters_small);
@@ -163,6 +112,7 @@ int main()
         }
 
         size_t iters_large = 5;
+        // Functions now come from kitpp::math (via dot_prod.hpp)
         double t_s = run_benchmark(dot_scalar, a_large, b_large, n_large, iters_large);
         double t_4 = run_benchmark(dot_avx_4x, a_large, b_large, n_large, iters_large);
         double t_8 = run_benchmark(dot_avx_zen2, a_large, b_large, n_large, iters_large);
