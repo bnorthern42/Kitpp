@@ -42,19 +42,8 @@ meson compile -C build
 ./build/usage_example
 ```
 
-### 3. Build with Makefile (Alternative)
 
-A standalone Makefile is provided for simple, manual builds without Meson.
-
-```bash
-# Build everything (example + library)
-make
-
-# Clean up artifacts
-make clean
-```
-
-### 4. Installation
+### 3. Installation
 
 To install headers and library files to your system (default: `/usr/local`):
 
@@ -113,7 +102,6 @@ kitpp/
 ├── examples/        # Usage examples
 ├── meson.build      # Meson build definition
 ├── meson_options.txt
-├── makefile         # Manual build script
 └── README.md
 ```
 
