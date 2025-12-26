@@ -11,13 +11,23 @@ project('kitpp', 'cpp',
 # Meson has built-in OpenMP support
 omp_dep = dependency('openmp', required : false)
 
-# --- Header-Only Interface ---
+# --- Include Directories ---
 inc = include_directories('include')
 
-# Define the dependency object for internal use (e.g. by examples)
-# This mimics CMake's 'INTERFACE' target
+# --- Main Library Target ---
+# Now compiling src/kitpp.cpp
+libkitpp = library('kitpp',
+  'src/printVersion.cpp',
+  include_directories : inc,
+  dependencies : omp_dep,
+  install : true
+)
+
+# --- Internal Dependency ---
+# Use this for examples or subprojects
 kitpp_dep = declare_dependency(
   include_directories : inc,
+  link_with : libkitpp,
   dependencies : omp_dep,
   version : meson.project_version()
 )
@@ -28,15 +38,13 @@ kitpp_dep = declare_dependency(
 install_subdir('include/kitpp', install_dir : get_option('includedir'))
 
 # Generate a pkg-config file (.pc)
-# This allows other projects to use: pkg-config --cflags --libs kitpp
+# We pass 'libkitpp' so pkg-config knows to link against it (-lkitpp)
 pkg = import('pkgconfig')
-pkg.generate(
+pkg.generate(libkitpp,
   name : 'kitpp',
   description : 'A C++23 library',
-  url : 'https://github.com/yourname/kitpp', # Optional
-  version : meson.project_version(),
-  # Propagate OpenMP flags to consumers
-  dependencies : omp_dep
+  url : 'https://github.com/yourname/kitpp',
+  version : meson.project_version()
 )
 
 # --- Examples ---

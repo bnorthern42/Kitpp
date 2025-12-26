@@ -1,12 +1,15 @@
-
 #ifndef KITPP_KITPP_HPP
 #define KITPP_KITPP_HPP
 
-#include "version.hpp"
-#include "platform.hpp"
-#include "log.hpp"
-#include "scope_timer.hpp"
-#include "throughput_logger.hpp"
+#include "log/log.hpp"
+#include "log/scope_timer.hpp"
+#include "log/throughput_logger.hpp"
+#include "sys/platform.hpp"
+#include "sys/version.hpp"
 
+namespace kitpp {
+// Declaration for the implementation in src/kitpp.cpp
+void printVersion();
+}
 
 #endif // KITPP_KITPP_HPP
