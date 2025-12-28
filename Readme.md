@@ -115,5 +115,5 @@ kitpp/
 
 ## License
 
-kitpp is licensed under the **GNU General Public License v2.0
+kitpp is licensed under the **MIT License**
 
