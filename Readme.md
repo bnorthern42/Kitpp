@@ -113,6 +113,11 @@ kitpp/
 3. Commit your changes
 4. Push and create a Pull Request
 
+### Attribution
+
+This project uses **rang** (https://github.com/agauniyal/rang), a header-only C++ terminal color library by Abhishek Gauniyal, licensed under the MIT License.
+
+
 ## License
 
 kitpp is licensed under the **MIT License**
