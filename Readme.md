@@ -13,7 +13,7 @@
 
 ## Prerequisites
 
-* C++ compiler with **C++23** support (e.g. GCC 13+, Clang 16+)
+* C++ compiler with **C++17** support (e.g. GCC 13+, Clang 16+)
 * Meson build system (`pip install meson`)
 * Ninja (`sudo apt install ninja-build` or equivalent)
 * `git`
@@ -75,19 +75,20 @@ g++ your_app.cpp -o my_app \
 
 ## Code Example
 
+Others in Example directory.
+
 ```cpp
 #include <iostream>
 #include <kitpp/log/logger.hpp>
 
 int main() {
-    // Initialize the logger
-    kitpp::log::Logger::init(kitpp::log::LogLevel::INFO);
+    int my_var = 42;
+    KITPP_LOG_VAR(my_var);
 
-    // Log messages
-    kitpp::log::Logger::info("Welcome to kitpp!");
+    KITPP_LOG_THREAD_CONTEXT("main thread final check");
 
-    // Example using other modules...
-    // kitpp::Math::opt::add(10, 20);
+    KITPP_LOG_ERROR("Exiting with a simulated error.");
+    
 
     return 0;
 }
