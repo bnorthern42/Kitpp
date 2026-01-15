@@ -4,6 +4,7 @@
 #include "log/log.hpp"
 #include "log/scope_timer.hpp"
 #include "log/throughput_logger.hpp"
+#include "log/manual_timer.hpp"
 #include "sys/platform.hpp"
 #include "sys/version.hpp"
 

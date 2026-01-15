@@ -1,86 +1,20 @@
 #ifndef KITPP_SCOPE_TIMER_HPP
 #define KITPP_SCOPE_TIMER_HPP
 
-#include <chrono>
-#include <fstream>
-#include <iomanip>
-#include <mutex>
-#include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "../sys/platform.hpp" // For OpenMP checks/includes
 #include "log.hpp"
+#include "TimerCommon.hpp"
 
 namespace kitpp {
 
-namespace detail::time {
-    // Gets current wall-clock time for the "Timestamp" column
-    inline std::string get_current_timestamp()
-    {
-        using namespace std::chrono;
-        auto now = system_clock::now();
-        auto in_time_t = system_clock::to_time_t(now);
-        auto ms = duration_cast<milliseconds>(now.time_since_epoch()) % 1000;
-
-        std::stringstream ss;
-        std::tm tm_buf;
-#if defined(_WIN32)
-        localtime_s(&tm_buf, &in_time_t);
-#else
-        localtime_r(&in_time_t, &tm_buf);
-#endif
-
-        ss << std::put_time(&tm_buf, "%Y-%m-%d %H:%M:%S");
-        ss << "." << std::setfill('0') << std::setw(3) << ms.count();
-        return ss.str();
-    }
-
-    inline std::string format_duration(long long duration_us)
-    {
-        using namespace std::chrono;
-        auto d = microseconds(duration_us);
-        auto h = duration_cast<hours>(d);
-        d -= h;
-        auto m = duration_cast<minutes>(d);
-        d -= m;
-        auto s = duration_cast<seconds>(d);
-        d -= s;
-        auto ms = duration_cast<milliseconds>(d);
-
-        std::stringstream ss;
-        ss << std::setfill('0') << std::setw(2) << h.count() << ":"
-           << std::setfill('0') << std::setw(2) << m.count() << ":"
-           << std::setfill('0') << std::setw(2) << s.count() << "."
-           << std::setfill('0') << std::setw(3) << ms.count();
-        return ss.str();
-    }
-
-    inline void log_time_to_file(const std::string_view scope,
-        long long duration_us, const char* file, int line,
-        const char* func)
-    {
-        static std::mutex log_mutex;
-        std::lock_guard<std::mutex> lock(log_mutex);
-
-        std::ofstream outfile("speed_tracker.csv", std::ios::app);
-
-        if (outfile.tellp() == 0) {
-            outfile << "Timestamp,Scope,File,Function,Line,Duration_us,Duration_Seconds,Duration_Pretty\n";
-        }
-
-        outfile << get_current_timestamp() << ","
-                << scope << "," << file << "," << func << "," << line << ","
-                << duration_us << ","
-                << (static_cast<double>(duration_us) / 1000000.0) << ","
-                << format_duration(duration_us) << "\n";
-    }
-} // namespace detail::time
-
-// --- ScopeTimer (Console Only) ---
+// --- ScopeTimer (Console Only, RAII) ---
 class ScopeTimer {
 public:
-    // Now accepts location info to log correctly
+    // Accepts location info to log correctly
     ScopeTimer(std::string label, const char* file, int line, const char* func)
         : label_(std::move(label))
         , file_(file)
@@ -97,8 +31,6 @@ public:
     ~ScopeTimer()
     {
         long long us = get_elapsed_us();
-        // Use log_impl directly to pass the captured file/line of the scope,
-        // rather than the file/line of this destructor.
         std::string msg = "ScopeTimer '" + label_ + "' elapsed: " + std::to_string(us) + " us";
         log::detail::log_impl("INFO    ", rang::fg::cyan, msg, file_, line_, func_);
     }
@@ -125,10 +57,9 @@ protected:
 #endif
 };
 
-// --- ScopeTimerFile (Console + CSV) ---
+// --- ScopeTimerFile (Console + CSV, RAII) ---
 class ScopeTimerFile : public ScopeTimer {
 public:
-    // Inherit constructor logic
     ScopeTimerFile(std::string label, const char* file, int line, const char* func)
         : ScopeTimer(std::move(label), file, line, func)
     {
@@ -136,11 +67,9 @@ public:
 
     ~ScopeTimerFile()
     {
-        // Note: The base ScopeTimer destructor will run after this, handling the Console log.
         long long us = get_elapsed_us();
-
-        // Log to CSV
         detail::time::log_time_to_file(label_, us, file_, line_, func_);
+        // Base destructor logs to console
     }
 };
 
