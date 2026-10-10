@@ -1,6 +1,7 @@
 #ifndef KITPP_SCOPE_TIMER_HPP
 #define KITPP_SCOPE_TIMER_HPP
 
+#include <fmt/format.h>
 #include <string>
 #include <utility>
 #include <vector>
@@ -31,7 +32,7 @@ public:
     ~ScopeTimer()
     {
         long long us = get_elapsed_us();
-        std::string msg = "ScopeTimer '" + label_ + "' elapsed: " + std::to_string(us) + " us";
+        std::string msg = fmt::format("ScopeTimer '{}' elapsed: {} us", label_, us);
         log::detail::log_impl("INFO    ", rang::fg::cyan, msg, file_, line_, func_);
     }
 

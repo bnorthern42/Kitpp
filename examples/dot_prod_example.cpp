@@ -4,7 +4,6 @@
 #include <cmath>
 #include <immintrin.h> // For AVX intrinsics in main (malloc)
 #include <iomanip>
-#include <sstream>
 #include <vector>
 
 using namespace kitpp::math;
@@ -39,12 +38,7 @@ void log_result(const char* name, double time_sec, size_t n_elements)
     double gb = total_bytes / (1024.0 * 1024.0 * 1024.0);
     double bandwidth = gb / time_sec;
 
-    std::stringstream ss;
-    ss << std::left << std::setw(12) << name
-       << ": " << std::fixed << std::setprecision(6) << time_sec << " s"
-       << " | Bandwidth: " << std::setprecision(2) << bandwidth << " GB/s";
-
-    KITPP_LOG_INFO(ss.str());
+    KITPP_LOG_INFO(fmt::format("{:<12}: {:.6f} s | Bandwidth: {:.2f} GB/s", name, time_sec, bandwidth));
 }
 
 int main()
@@ -74,18 +68,9 @@ int main()
         double t_4 = run_benchmark(dot_avx_4x, a_small, b_small, n_small, iters_small);
         double t_8 = run_benchmark(dot_avx_zen2, a_small, b_small, n_small, iters_small);
 
-        // Format and log manually since KITPP_LOG takes a string
-        std::stringstream ss;
-        ss << "Scalar:    " << t_s * 1e6 << " us";
-        KITPP_LOG_INFO(ss.str());
-
-        ss.str("");
-        ss << "AVX (4x):  " << t_4 * 1e6 << " us";
-        KITPP_LOG_INFO(ss.str());
-
-        ss.str("");
-        ss << "Zen2 (8x): " << t_8 * 1e6 << " us";
-        KITPP_LOG_INFO(ss.str());
+        KITPP_LOG_INFO(fmt::format("Scalar:    {} us", t_s * 1e6));
+        KITPP_LOG_INFO(fmt::format("AVX (4x):  {} us", t_4 * 1e6));
+        KITPP_LOG_INFO(fmt::format("Zen2 (8x): {} us", t_8 * 1e6));
 
         _mm_free(a_small);
         _mm_free(b_small);
@@ -99,7 +84,7 @@ int main()
         KITPP_LOG_INFO("\n--- RAM TEST (100 Million elements) ---");
 
         double data_size_gb = (double)n_large * 16.0 / (1024.0 * 1024.0 * 1024.0);
-        KITPP_LOG_INFO("Data Size: " + std::to_string(data_size_gb) + " GB read per run");
+        KITPP_LOG_INFO(fmt::format("Data Size: {} GB read per run", data_size_gb));
 
         double* a_large = (double*)_mm_malloc(n_large * sizeof(double), 32);
         double* b_large = (double*)_mm_malloc(n_large * sizeof(double), 32);

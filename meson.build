@@ -17,6 +17,7 @@ endif
 # --- Dependencies ---
 # Meson has built-in OpenMP support
 omp_dep = dependency('openmp', required : false)
+fmt_dep = dependency('fmt')
 
 # --- Include Directories ---
 inc = include_directories('include')
@@ -26,7 +27,7 @@ inc = include_directories('include')
 libkitpp = library('kitpp',
   'src/kitpp.cpp',
   include_directories : inc,
-  dependencies : omp_dep,
+  dependencies : [omp_dep, fmt_dep],
   install : true
 )
 
@@ -35,7 +36,7 @@ libkitpp = library('kitpp',
 kitpp_dep = declare_dependency(
   include_directories : inc,
   link_with : libkitpp,
-  dependencies : omp_dep,
+  dependencies : [omp_dep, fmt_dep],
   version : meson.project_version()
 )
 

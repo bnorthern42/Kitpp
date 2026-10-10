@@ -1,8 +1,8 @@
 #ifndef KITPP_LOG_HPP
 #define KITPP_LOG_HPP
 
+#include <fmt/format.h>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <string_view>
 #include <typeinfo>
@@ -77,9 +77,7 @@ template <typename T>
 inline void log_var_helper(const std::string_view name, const T& value, const char* file, int line, const char* func)
 {
     // Use stream to string conversion to support non-string types safely
-    std::ostringstream ss;
-    ss << value;
-    kitpp::log::detail::log_var_impl(name, typeid(T).name(), ss.str(), file, line, func);
+    kitpp::log::detail::log_var_impl(name, typeid(T).name(), fmt::format("{}", value), file, line, func);
 }
 
 #define KITPP_LOG_VAR(variable) \

@@ -1,6 +1,7 @@
 #ifndef KITPP_MANUAL_TIMER_HPP
 #define KITPP_MANUAL_TIMER_HPP
 
+#include <fmt/format.h>
 #include <string>
 #include <utility>
 
@@ -81,7 +82,7 @@ protected:
 
     // Virtual hook to allow derived classes (File) to add logging behavior
     virtual void on_stop(long long us) {
-        std::string msg = "ManualTimer '" + label_ + "' elapsed: " + std::to_string(us) + " us";
+        std::string msg = fmt::format("ManualTimer '{}' elapsed: {} us", label_, us);
         log::detail::log_impl("INFO    ", rang::fg::cyan, msg, file_, line_, func_);
     }
 
