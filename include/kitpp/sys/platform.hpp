@@ -4,6 +4,7 @@
 #include <string>
 #include <thread>
 #include <sstream>
+#include <new> // For hardware interference size
 
 #if defined(_WIN32)
   #include <windows.h>
@@ -14,6 +15,10 @@
 #if defined(_OPENMP)
   #include <omp.h>
 #endif
+
+// Ignore the warning on GCC/Clang about interference size being variable
+// We use a constant 64 as a safe default for most architectures
+#define KITPP_CACHE_ALIGN alignas(64)
 
 namespace kitpp {
 

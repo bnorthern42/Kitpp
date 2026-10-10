@@ -9,6 +9,8 @@
 #include <string>
 #include <string_view>
 
+#include "../sys/platform.hpp"
+
 namespace kitpp::detail::time {
 
     // Gets current wall-clock time for the "Timestamp" column
@@ -56,8 +58,11 @@ namespace kitpp::detail::time {
         long long duration_us, const char* file, int line,
         const char* func)
     {
-        static std::mutex log_mutex;
-        std::lock_guard<std::mutex> lock(log_mutex);
+        struct KITPP_CACHE_ALIGN AlignedMutex {
+            std::mutex m;
+        };
+        static AlignedMutex am;
+        std::lock_guard<std::mutex> lock(am.m);
 
         std::ofstream outfile("speed_tracker.csv", std::ios::app);
 

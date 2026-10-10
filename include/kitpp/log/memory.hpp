@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "../sys/platform.hpp"
+
 namespace kitpp::memory {
 
 // --- 1. Memory Calculation Templates ---
@@ -35,8 +37,11 @@ inline size_t get_deep_size(const std::string& str)
 inline void log_mem_to_file(const char* var_name, const std::string& context,
     size_t bytes, const char* file, int line)
 {
-    static std::mutex log_mutex;
-    std::lock_guard<std::mutex> lock(log_mutex);
+    struct KITPP_CACHE_ALIGN AlignedMutex {
+        std::mutex m;
+    };
+    static AlignedMutex am;
+    std::lock_guard<std::mutex> lock(am.m);
 
     // Open file in Append mode
     std::ofstream outfile("memory_tracker.csv", std::ios::app);
