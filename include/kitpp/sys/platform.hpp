@@ -5,6 +5,7 @@
 #include <fmt/std.h>
 #include <string>
 #include <thread>
+#include <sstream>
 #include <new> // For hardware interference size
 
 #if defined(_WIN32)
