@@ -24,3 +24,4 @@ builddir/
 *.swp
 *~
 .cache/
+subprojects/

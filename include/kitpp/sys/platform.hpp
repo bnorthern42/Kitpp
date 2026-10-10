@@ -1,6 +1,8 @@
 #ifndef KITPP_PLATFORM_HPP
 #define KITPP_PLATFORM_HPP
 
+#include <fmt/format.h>
+#include <fmt/std.h>
 #include <string>
 #include <thread>
 #include <sstream>
@@ -33,9 +35,7 @@ namespace kitpp {
 
     // C++ thread id → string
     inline std::string tid_string() {
-        std::ostringstream os;
-        os << std::this_thread::get_id();
-        return os.str();
+        return fmt::format("{}", std::this_thread::get_id());
     }
 
     // OpenMP helpers (safe when OpenMP absent)

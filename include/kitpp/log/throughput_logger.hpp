@@ -4,6 +4,7 @@
 #include "../sys/platform.hpp" // For OpenMP checks/includes
 #include "log.hpp"
 #include <chrono>
+#include <fmt/format.h>
 #include <string>
 
 namespace kitpp {
@@ -42,7 +43,7 @@ public:
 
         if (elapsed_sec > 0) {
             double ops_per_sec = static_cast<double>(operations_completed) / elapsed_sec;
-            KITPP_LOG_INFO("ThroughputLogger '" + label_ + "': " + std::to_string(ops_per_sec) + " ops/sec");
+            KITPP_LOG_INFO(fmt::format("ThroughputLogger '{}': {} ops/sec", label_, ops_per_sec));
         } else {
             KITPP_LOG_INFO("ThroughputLogger '" + label_ + "': Elapsed time too short to calculate ops/sec.");
         }

@@ -1,11 +1,11 @@
 #ifndef KITPP_TIMER_COMMON_HPP
 #define KITPP_TIMER_COMMON_HPP
 
+#include <fmt/format.h>
 #include <chrono>
 #include <fstream>
 #include <iomanip>
 #include <mutex>
-#include <sstream>
 #include <string>
 #include <string_view>
 
@@ -21,7 +21,6 @@ namespace kitpp::detail::time {
         auto in_time_t = system_clock::to_time_t(now);
         auto ms = duration_cast<milliseconds>(now.time_since_epoch()) % 1000;
 
-        std::stringstream ss;
         std::tm tm_buf;
 #if defined(_WIN32)
         localtime_s(&tm_buf, &in_time_t);
@@ -29,9 +28,10 @@ namespace kitpp::detail::time {
         localtime_r(&in_time_t, &tm_buf);
 #endif
 
-        ss << std::put_time(&tm_buf, "%Y-%m-%d %H:%M:%S");
-        ss << "." << std::setfill('0') << std::setw(3) << ms.count();
-        return ss.str();
+        return fmt::format("{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}.{:03d}",
+                           tm_buf.tm_year + 1900, tm_buf.tm_mon + 1, tm_buf.tm_mday,
+                           tm_buf.tm_hour, tm_buf.tm_min, tm_buf.tm_sec,
+                           ms.count());
     }
 
     inline std::string format_duration(long long duration_us)
@@ -46,12 +46,8 @@ namespace kitpp::detail::time {
         d -= s;
         auto ms = duration_cast<milliseconds>(d);
 
-        std::stringstream ss;
-        ss << std::setfill('0') << std::setw(2) << h.count() << ":"
-           << std::setfill('0') << std::setw(2) << m.count() << ":"
-           << std::setfill('0') << std::setw(2) << s.count() << "."
-           << std::setfill('0') << std::setw(3) << ms.count();
-        return ss.str();
+        return fmt::format("{:02d}:{:02d}:{:02d}.{:03d}",
+                           h.count(), m.count(), s.count(), ms.count());
     }
 
     inline void log_time_to_file(const std::string_view scope,
