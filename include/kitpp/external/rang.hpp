@@ -11,6 +11,8 @@
 #error Unknown Platform
 #endif
 
+#include "../sys/platform.hpp"
+
 #if defined(OS_LINUX) || defined(OS_MAC)
 #include <unistd.h>
 
@@ -126,14 +128,20 @@ namespace rang_implementation {
 
     inline std::atomic<control>& controlMode() noexcept
     {
-        static std::atomic<control> value(control::Auto);
-        return value;
+        struct KITPP_CACHE_ALIGN AlignedControl {
+            std::atomic<control> value{control::Auto};
+        };
+        static AlignedControl ac;
+        return ac.value;
     }
 
     inline std::atomic<winTerm>& winTermMode() noexcept
     {
-        static std::atomic<winTerm> termMode(winTerm::Auto);
-        return termMode;
+        struct KITPP_CACHE_ALIGN AlignedWinTerm {
+            std::atomic<winTerm> termMode{winTerm::Auto};
+        };
+        static AlignedWinTerm aw;
+        return aw.termMode;
     }
 
     inline bool supportsColor() noexcept
@@ -403,8 +411,11 @@ namespace rang_implementation {
 
     inline SGR& current_state() noexcept
     {
-        static SGR state = defaultState();
-        return state;
+        struct KITPP_CACHE_ALIGN AlignedSGR {
+            SGR state = defaultState();
+        };
+        static AlignedSGR as;
+        return as.state;
     }
 
     inline WORD SGR2Attr(const SGR& state) noexcept
