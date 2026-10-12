@@ -1,11 +1,5 @@
-#include <chrono>
 #include <cstddef>
-#include <cstring>
 #include <immintrin.h>
-#include <iomanip>
-#include <iostream>
-#include <numeric>
-#include <vector>
 
 namespace kitpp::math {
 
