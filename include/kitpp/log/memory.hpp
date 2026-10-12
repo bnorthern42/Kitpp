@@ -43,12 +43,13 @@ inline void log_mem_to_file(const char* var_name, const std::string& context,
     static AlignedMutex am;
     std::lock_guard<std::mutex> lock(am.m);
 
-    // Open file in Append mode
-    std::ofstream outfile("memory_tracker.csv", std::ios::app);
-
-    // Write CSV Header if file is empty/new
-    if (outfile.tellp() == 0) {
-        outfile << "File,Line,Context,Variable,Bytes,Megabytes\n";
+    static std::ofstream outfile;
+    if (!outfile.is_open()) {
+        outfile.open("memory_tracker.csv", std::ios::app);
+        // Write CSV Header if file is empty/new
+        if (outfile.tellp() == 0) {
+            outfile << "File,Line,Context,Variable,Bytes,Megabytes\n";
+        }
     }
 
     double mb = static_cast<double>(bytes) / (1024.0 * 1024.0);
