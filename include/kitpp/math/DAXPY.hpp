@@ -1,7 +1,4 @@
-#include <chrono>
 #include <immintrin.h>
-#include <iomanip>
-#include <iostream>
 #include <omp.h>
 #include <vector>
 
