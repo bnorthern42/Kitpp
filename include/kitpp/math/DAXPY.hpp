@@ -4,11 +4,16 @@
 #include <iostream>
 #include <omp.h>
 #include <vector>
+#include <stdexcept>
 
 namespace kitpp::math {
 
 void axpy_scalar(double alpha, const std::vector<double>& x, std::vector<double>& y)
 {
+    if (x.size() < y.size()) {
+        throw std::invalid_argument("x.size() must be >= y.size()");
+    }
+
 #pragma omp parallel for
     for (size_t i = 0; i < y.size(); ++i) {
         y[i] += alpha * x[i];
@@ -22,6 +27,10 @@ void axpy_scalar(double alpha, const std::vector<double>& x, std::vector<double>
 // - Use OpenMP for multi-core memory saturation.
 void axpy_avx(double alpha, const std::vector<double>& x, std::vector<double>& y)
 {
+    if (x.size() < y.size()) {
+        throw std::invalid_argument("x.size() must be >= y.size()");
+    }
+
     size_t n = y.size();
 
     // Broadcast alpha to a vector: [alpha, alpha, alpha, alpha]
