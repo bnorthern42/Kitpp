@@ -75,3 +75,10 @@ if get_option('build_examples')
   endforeach
 
 endif
+
+# --- Tests ---
+test_resource = executable('test_resource',
+  'tests/test_resource.cpp',
+  dependencies : kitpp_dep
+)
+test('resource_test', test_resource)
