@@ -132,10 +132,14 @@ include Setup of env, IDE and typical getting started instructions?
 -->
 
 ### Improving The Documentation
-<!-- TODO
-Updating, improving and correcting the documentation
+Documentation is just as important as code. We welcome contributions that improve, update, or correct our documentation.
 
--->
+#### How to Contribute to Documentation
+- Identify the documentation you want to improve. This could be the `README.md`, comments within the code, or any other Markdown files in the repository.
+- Make your changes locally, ensuring that the Markdown is formatted correctly and that links are valid.
+- If you're adding a new feature, make sure to add or update relevant documentation.
+- Commit your changes with a clear commit message, prefixing it with `docs: ` (e.g., `docs: update setup instructions in README`).
+- Submit a Pull Request with your changes. Describe what you've changed and why it improves the documentation.
 
 ## Styleguides
 ### Commit Messages
